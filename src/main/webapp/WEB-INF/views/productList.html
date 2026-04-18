@@ -120,5 +120,8 @@
         </tbody>
     </table>
 
+    <footer>
+        <p th:text="${'실습 수행 일시: ' + #temporals.format(#temporals.createNow(), 'yyyy년 MM월 dd일 (E) a hh:mm:ss') + ' | 학번: 2371408 | 성명: 박규현'}"></p>
+    </footer>
 </body>
 </html>

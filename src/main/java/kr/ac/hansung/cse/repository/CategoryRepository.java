@@ -28,16 +28,45 @@ public class CategoryRepository {
                 .getResultList();
     }
 
-    // 이름으로 카테고리 조회 (폼에서 선택한 카테고리명 → Category 엔티티 변환 시 사용)
+    /**
+     * [힌트 ② 반영] 이름으로 카테고리 조회 (JPQL 활용)
+     * 이름 중복 검사용으로 사용됩니다.
+     */
     public Optional<Category> findByName(String name) {
-        List<Category> result = em.createQuery(
+        List<Category> r = em.createQuery(
                         "SELECT c FROM Category c WHERE c.name = :name", Category.class)
                 .setParameter("name", name)
                 .getResultList();
-        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+        return r.isEmpty() ? Optional.empty() : Optional.of(r.get(0));
     }
 
-    // JOIN FETCH: N+1 문제 방지 (Category + Products 한 번에 로드)
+    /**
+     * [힌트 ② 반영] 삭제 전 연결 상품 수 확인 (COUNT 쿼리)
+     * 상품이 하나라도 있으면 삭제를 막는 비즈니스 로직의 핵심입니다.
+     */
+    public long countProductsByCategoryId(Long categoryId) {
+        return em.createQuery(
+                        "SELECT COUNT(p) FROM Product p WHERE p.category.id = :id",
+                        Long.class)
+                .setParameter("id", categoryId)
+                .getSingleResult();
+    }
+
+    /**
+     * [힌트 ② 반영] 카테고리 삭제
+     * em.find로 엔티티를 영속성 컨텍스트에 올린 후 삭제합니다.
+     */
+    public void delete(Long id) {
+        Category c = em.find(Category.class, id);
+        if (c != null) {
+            em.remove(c);
+        }
+    }
+
+    /**
+     * [추가 기능] JOIN FETCH: N+1 문제 방지
+     * 나중에 상품과 함께 카테고리를 조회할 때 성능 최적화를 위해 남겨둡니다.
+     */
     public Optional<Category> findByIdWithProducts(Long id) {
         List<Category> result = em.createQuery(
                         "SELECT DISTINCT c FROM Category c JOIN FETCH c.products WHERE c.id = :id",
@@ -47,4 +76,3 @@ public class CategoryRepository {
         return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
 }
-

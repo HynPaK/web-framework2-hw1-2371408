@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Category</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">새 카테고리 등록</h3>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/categories/create}" th:object="${categoryForm}" method="post">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">카테고리 이름</label>
+                            <input type="text" th:field="*{name}" id="name"
+                                   class="form-control"
+                                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"
+                                   placeholder="예: 전자제품, 의류">
+                            <div class="invalid-feedback" th:errors="*{name}">
+                                이름 에러 메시지
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a th:href="@{/categories}" class="btn btn-secondary">취소</a>
+                            <button type="submit" class="btn btn-success">등록하기</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-5 pt-3 border-top text-center text-muted">
+        <p th:text="${'실습 수행 일시: ' + #temporals.format(#temporals.createNow(), 'yyyy년 MM월 dd일 (E) a hh:mm:ss') + ' | 학번: 2371408 | 성명: 박규현'}"></p>
+    </footer>
+</div>
+</body>
+</html>
